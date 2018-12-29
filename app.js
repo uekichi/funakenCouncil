@@ -38,21 +38,29 @@ app.use(session({ secret: process.env.SESSION_ID, resave: false, saveUninitializ
 app.use(passport.initialize());
 app.use(passport.session());
 
-//
+//ツイッター認証
 app.get('/auth/twitter',
     passport.authenticate('twitter'));
 //認証の成否分岐
 app.get('/auth/twitter/callback',
     passport.authenticate('twitter', { failureRedirect: '/login' }),
     function(req, res) {
-      res.redirect('/OAuth認証成功');
-    });
+      res.redirect('/');
+});
+
+//ログインURLでログイン画面の表示
+app.get('/login', function(req, res) {
+  res.render('login');
+});
+//ログアウトURLでログアウト設定
+app.get('/logout', function(req, res) {
+  req.logout();
+  res.redirect('/');
+});
+
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-
-
-
 
 
 // view engine setup
@@ -66,7 +74,13 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(helmet());
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/users', ensureAuthenticated, usersRouter);
+
+//認証されていなければログイン画面に戻される関数
+function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) { return next(); }
+  res.redirect('/login');
+}
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
