@@ -43,24 +43,15 @@ app.get('/auth/twitter',
     passport.authenticate('twitter'));
 //認証の成否分岐
 app.get('/auth/twitter/callback',
-    passport.authenticate('twitter', { failureRedirect: '/login' }),
+    passport.authenticate('twitter', { failureRedirect: '/login' }), //失敗したら
     function(req, res) {
-      res.redirect('/');
-});
-
-//ログインURLでログイン画面の表示
-app.get('/login', function(req, res) {
-  res.render('login');
-});
-//ログアウトURLでログアウト設定
-app.get('/logout', function(req, res) {
-  req.logout();
-  res.redirect('/');
+      res.redirect('/'); //成功したら
 });
 
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+var loginRouter = require('./routes/login');
+var logoutRouter = require('./routes/logout');
 
 
 // view engine setup
@@ -74,7 +65,8 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(helmet());
 app.use('/', indexRouter);
-app.use('/users', ensureAuthenticated, usersRouter);
+app.use('/login', loginRouter);
+app.use('/logout', logoutRouter);
 
 //認証されていなければログイン画面に戻される関数
 function ensureAuthenticated(req, res, next) {

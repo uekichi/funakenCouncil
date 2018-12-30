@@ -1,4 +1,7 @@
 extends layout
 
 block content
-  a(href="/auth/twitter") Login with Twitter
+  h1= title
+  a(href="/auth/twitter") Twitter でログイン
+  if user
+    p 現在 #{user.username} でログイン中
