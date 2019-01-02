@@ -1,0 +1,18 @@
+extends layout
+
+block content
+  h4 #{title.titleName}
+  p(style="white-space:pre;") #{title.memo}
+  p 作成者: #{title.user.username}
+  h3 皆様の返答
+  table
+    tr
+      th 戦略
+      each user in users
+        th #{user.username}
+    each strategy in strategies
+      tr
+        th #{strategy.strategyName}
+        each user in users
+          td
+            button ないない
