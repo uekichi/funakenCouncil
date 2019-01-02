@@ -5,6 +5,22 @@ block content
   p Welcome to #{title}
   div
     if user
-      a(href="/logout") #{user.username} をログアウト
+      div
+        a(href="/logout") #{user.username} をログアウト
+      div
+        a(href="/titles/new") レース予想を作る
+      - var hasTitle = titles.length > 0
+      if hasTitle
+        h3 あなたのレース予想一覧
+        table.table
+          tr
+            th タイトル名
+            th 作成日時
+          each title in titles
+            tr
+              td
+                a(href=`/titles/${title.titleId}`) #{title.titleName}
+              td #{title.createdAt}
     else
-      a(href="/login") ログイン
+      div
+        a(href="/login") ログイン

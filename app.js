@@ -7,6 +7,25 @@ var helmet = require('helmet');
 //OAuth認証　passport-twitter
 var session = require('express-session');
 var passport = require('passport');
+
+//モデルの読み込み
+var User = require('./models/user');
+var Title = require('./models/title');
+var Aruaru = require('./models/aruaru');
+var Strategy = require('./models/strategy');
+var Comment = require('./models/comment');
+User.sync().then(() => {
+  Title.belongsTo(User, {foreignKey: 'createdBy'});
+  Title.sync();
+  Comment.belongsTo(User, {foreignKey: 'userId'});
+  Comment.sync();
+  Aruaru.belongsTo(User, {foreignKey: 'userId'});
+  Strategy.sync().then(() => {
+    Aruaru.belongsTo(Strategy, {foreignKey: 'strategyId'});
+    Aruaru.sync();
+  });
+});
+
 var TwitterStrategy = require('passport-twitter');
 require('dotenv').config();
 
@@ -27,7 +46,12 @@ passport.use(new TwitterStrategy({
 },
 function (accessToken, refreshToken, profile, done) {
   process.nextTick(function () {
-    return done(null, profile);
+    User.upsert({
+      userId: profile.id,
+      username: profile.username
+    }).then(() => {
+      done(null, profile);
+    });
   });
 }
 ));
@@ -48,10 +72,11 @@ app.get('/auth/twitter/callback',
       res.redirect('/'); //成功したら
 });
 
-
+// ルーター登録
 var indexRouter = require('./routes/index');
 var loginRouter = require('./routes/login');
 var logoutRouter = require('./routes/logout');
+var titlesRouter = require('./routes/titles');
 
 
 // view engine setup
@@ -67,12 +92,8 @@ app.use(helmet());
 app.use('/', indexRouter);
 app.use('/login', loginRouter);
 app.use('/logout', logoutRouter);
+app.use('/titles', titlesRouter);
 
-//認証されていなければログイン画面に戻される関数
-function ensureAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) { return next(); }
-  res.redirect('/login');
-}
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

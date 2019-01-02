@@ -1,0 +1,14 @@
+extends layout
+
+block content
+  form(method="post", action="/titles")
+    div
+      h5 レースタイトル
+      input(type="text" name="titleName")
+    div
+      h5 メモ
+      textarea(name="memo")
+    div
+      h5 戦略・予想(改行して複数入力してください)
+      textarea(name="strategies")
+    button(type="submit") レース予想を作る
