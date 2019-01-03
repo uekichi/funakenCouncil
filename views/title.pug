@@ -14,5 +14,10 @@ block content
       tr
         th #{strategy.strategyName}
         each user in users
+          - var aruaru = aruaruMapMap.get(user.userId).get(strategy.strategyId)
+          - var aruaruLabels = ['????', 'あるある', 'ないない'];
           td
-            button ないない
+            if user.isSelf
+              button #{aruaruLabels[aruaru]}
+            else
+              p #{aruaruLabels[aruaru]}

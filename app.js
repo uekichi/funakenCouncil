@@ -14,6 +14,7 @@ var Title = require('./models/title');
 var Aruaru = require('./models/aruaru');
 var Strategy = require('./models/strategy');
 var Comment = require('./models/comment');
+
 User.sync().then(() => {
   Title.belongsTo(User, {foreignKey: 'createdBy'});
   Title.sync();
@@ -77,6 +78,7 @@ var indexRouter = require('./routes/index');
 var loginRouter = require('./routes/login');
 var logoutRouter = require('./routes/logout');
 var titlesRouter = require('./routes/titles');
+var aruarusRouter = require('./routes/aruarus');
 
 
 // view engine setup
@@ -93,6 +95,7 @@ app.use('/', indexRouter);
 app.use('/login', loginRouter);
 app.use('/logout', logoutRouter);
 app.use('/titles', titlesRouter);
+app.use('/titles', aruarusRouter);
 
 
 // catch 404 and forward to error handler
