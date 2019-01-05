@@ -18,7 +18,7 @@ router.post('/:titleId/users/:userId/strategies/:strategyId', authenticationEnsu
     strategyId: strategyId,
     aruaru: aruaru
   }).then(() => {
-    res.json({ status: 'OK', aruaru: aruaru});
+    res.json({status:'OK', aruaru: aruaru});
   });
 });
 

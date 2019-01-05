@@ -15,9 +15,13 @@ block content
         th #{strategy.strategyName}
         each user in users
           - var aruaru = aruaruMapMap.get(user.userId).get(strategy.strategyId)
-          - var aruaruLabels = ['????', 'あるある', 'ないない'];
+          - var aruaruLabels = ['？？？？', 'あるある', 'ないない'];
           td
             if user.isSelf
-              button #{aruaruLabels[aruaru]}
+              button(
+                data-title-id=title.titleId
+                data-user-id=user.userId
+                data-strategy-id=strategy.strategyId
+                data-aruaru=aruaru).aruaru-toggle-button #{aruaruLabels[aruaru]}
             else
               p #{aruaruLabels[aruaru]}
