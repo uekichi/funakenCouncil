@@ -169,7 +169,6 @@ function deleteTitleAggregate(titleId, done, err){
   }).then((comments) => {
     return Promise.all(comments.map((c) => { return c.destroy(); }));
   });
-
   Aruaru.findAll({
     where: { titleId: titleId }
   }).then((aruarus) => {
@@ -178,7 +177,7 @@ function deleteTitleAggregate(titleId, done, err){
   }).then(() => {
     return Strategy.findAll({
         where: { titleId: titleId }
-      });
+    });
   }).then((strategies) => {
     const promises = strategies.map((c) => { return c.destroy(); });
     promises.push(promiseCommentDestroy);
