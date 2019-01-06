@@ -112,6 +112,20 @@ jquery__WEBPACK_IMPORTED_MODULE_0___default()('.aruaru-toggle-button').each(func
     });
   });
 });
+var buttonSelfComment = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#self-comment-button');
+buttonSelfComment.click(function () {
+  var titleId = buttonSelfComment.data('title-id');
+  var userId = buttonSelfComment.data('user-id');
+  var comment = prompt('コメントを225文字以内で入力してください。');
+
+  if (comment) {
+    jquery__WEBPACK_IMPORTED_MODULE_0___default.a.post("/titles/".concat(titleId, "/users/").concat(userId, "/comments"), {
+      comment: comment
+    }, function (data) {
+      jquery__WEBPACK_IMPORTED_MODULE_0___default()('#self-comment').text(data.comment);
+    });
+  }
+});
 
 /***/ }),
 /* 1 */

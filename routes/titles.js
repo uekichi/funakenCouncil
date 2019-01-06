@@ -8,6 +8,7 @@ const Title = require('../models/title');
 const Strategy = require('../models/strategy');
 const User = require('../models/user');
 const Aruaru = require('../models/aruaru');
+const Comment = require('../models/comment');
 
 router.get('/new', authenticationEnsurer, (req, res, next) => {
   res.render('new', {user: req.user});
@@ -71,13 +72,22 @@ router.get('/:titleId', authenticationEnsurer, (req, res, next) => {
               aruaruMapMap.set(u.userId, map);  //あるあるを使える状態にした
             });
           });
-          
-          res.render('title', {
-            user: req.user,
-            title: title,
-            strategies: strategies,
-            users: users,
-            aruaruMapMap: aruaruMapMap
+          // コメント取得
+          Comment.findAll({
+            where: { titleId: title.titleId }
+          }).then((comments) => {
+            const commentMap = new Map(); //key: userId, value: comment
+            comments.forEach((comment) => {
+              commentMap.set(comment.userId, comment.comment);
+            });
+            res.render('title', {
+              user: req.user,
+              title: title,
+              strategies: strategies,
+              users: users,
+              aruaruMapMap: aruaruMapMap,
+              commentMap: commentMap
+            });
           });
         });
       });
@@ -110,5 +120,6 @@ router.post('/', authenticationEnsurer, (req, res, next) => {
     });
   });
 });
+
 
 module.exports = router;

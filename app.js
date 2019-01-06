@@ -79,6 +79,7 @@ var loginRouter = require('./routes/login');
 var logoutRouter = require('./routes/logout');
 var titlesRouter = require('./routes/titles');
 var aruarusRouter = require('./routes/aruarus');
+var commentsRouter = require('./routes/comments');
 
 
 // view engine setup
@@ -96,6 +97,7 @@ app.use('/login', loginRouter);
 app.use('/logout', logoutRouter);
 app.use('/titles', titlesRouter);
 app.use('/titles', aruarusRouter);
+app.use('/titles', commentsRouter);
 
 
 // catch 404 and forward to error handler

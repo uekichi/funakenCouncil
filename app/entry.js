@@ -18,3 +18,17 @@ $('.aruaru-toggle-button').each((i, e) => {
     });
   });
 });
+
+const buttonSelfComment = $('#self-comment-button');
+buttonSelfComment.click(() => {
+  const titleId = buttonSelfComment.data('title-id');
+  const userId = buttonSelfComment.data('user-id');
+  const comment = prompt('コメントを225文字以内で入力してください。');
+  if (comment) {
+    $.post(`/titles/${titleId}/users/${userId}/comments`,
+    {comment: comment},
+    (data) => {
+      $('#self-comment').text(data.comment);
+    });
+  }
+});

@@ -25,3 +25,15 @@ block content
                 data-aruaru=aruaru).aruaru-toggle-button #{aruaruLabels[aruaru]}
             else
               p #{aruaruLabels[aruaru]}
+    tr
+      th 結果
+      each user in users
+        if user.isSelf
+          td
+            p#self-comment #{commentMap.get(user.userId)}
+            button(
+              data-title-id=title.titleId
+              data-user-id=user.userId)#self-comment-button 書き込み
+        else
+          td
+            p #{commentMap.get(user.userId)}

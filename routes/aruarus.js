@@ -11,7 +11,7 @@ router.post('/:titleId/users/:userId/strategies/:strategyId', authenticationEnsu
   const strategyId = req.params.strategyId;
   let aruaru = req.body.aruaru;
   aruaru = aruaru ? parseInt(aruaru) : 0;
-
+  console.log(userId);
   Aruaru.upsert({
     titleId: titleId,
     userId: userId,
