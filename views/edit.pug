@@ -1,0 +1,20 @@
+extends layout
+
+block content
+  h3 編集
+  form(method="post" action=`/titles/${title.titleId}?edit=1`)
+    div
+      h5 タイトル
+      input(type="text" name="titleName" value=title.titleName)
+    div
+      h5 メモ
+      textarea(name="memo") #{title.memo}
+    div
+      label 既存の戦略・予想
+      ul
+        each strategy in strategies
+          li #{strategy.strategyName}
+      p 新規追加 (改行して複数入力してください)
+      textarea(name="strategies")
+    div
+      button(type="submit") 以上の内容で編集する

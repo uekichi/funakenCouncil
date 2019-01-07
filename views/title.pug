@@ -4,6 +4,14 @@ block content
   h4 #{title.titleName}
   p(style="white-space:pre;") #{title.memo}
   p 作成者: #{title.user.username}
+  - var isMine = parseInt(user.id) === parseInt(title.user.userId)
+  //なぜ表示されないか
+  //なぜ保存したuserIdと閲覧しているUserIdが違うのか
+  p #{title.user.userId}
+  p #{parseInt(user.id)}
+  if isMine
+    div
+      a(href=`/titles/${title.titleId}/edit`) 編集する
   h3 皆様の返答
   table
     tr

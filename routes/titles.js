@@ -115,18 +115,96 @@ router.post('/', authenticationEnsurer, (req, res, next) => {
     createdBy: req.user.id,
     createdAt: createdAt
   }).then((title) => {
-    const strategyName = req.body.strategies.trim().split('\n').map((s) => s.trim().slice(0, 225)).filter((s) => s !== "");
-    const strategies = strategyName.map((s) => {
-      return {
-        strategyName: s,
-        titleId: title.titleId
-      };
-    });
-    Strategy.bulkCreate(strategies).then(() => {
-      res.redirect('/titles/' + title.titleId);
-    });
+    createStrategiesAndRedirect(parseStrategyNames(req), titleId, res);
   });
 });
+
+router.get('/:titleId/edit', authenticationEnsurer, (req, res, next) => {
+  Title.findOne({
+    where: {
+      titleId: req.params.titleId
+    }
+  }).then((title) => {
+    if (isMine(req, title)) { // 作成者のみが編集フォームを開ける
+      Strategy.findAll({
+        where: { titleId: title.titleId },
+        order: [['"strategyId"', 'ASC']]
+      }).then((strategies) => {
+        res.render('edit', {
+          user: req.user,
+          title: title,
+          strategies: strategies
+        });
+      });
+    } else {
+      const err = new Error('指定されたタイトルがない、または、予定する権限がありません');
+      err.status = 404;
+      next(err);
+    }
+  });
+});
+
+function isMine(req, title) {
+  return title && parseInt(title.createdBy) === parseInt(req.user.id);
+}
+
+router.post('/:titleId', authenticationEnsurer, (req, res, next) => {
+  Title.findOne({
+    where: {
+      titleId: req.params.titleId
+    }
+  }).then((title) => {
+    if (title && isMine(req, title)) {
+      if (parseInt(req.query.edit) === 1) {
+        // 更新日なし
+        title.update({
+          titleId: title.titleId,
+          titleName: req.body.titleName.slice(0, 255),
+          memo: req.body.memo,
+          createdBy: req.user.id,
+        }).then((title) => {
+          Strategy.findAll({
+            where: { titleId: title.titleId },
+            order: [['"strategyId"', 'ASC']]
+          }).then((strategies) => {
+            // 追加されているかチェック
+            const strategyNames = parseStrategyNames(req);
+            if (strategyNames) {
+              createStrategiesAndRedirect(strategyNames, title.titleId, res);
+            } else {
+              res.redirect('/titles/' + title.titleId);
+            }
+          });
+        });
+      } else {
+        const err = new Error('不正なリクエストです');
+        err.status = 400;
+        next(err);
+      }
+    } else {
+      const err = new Error('指定されたタイトルがない、または、編集する権限がありません');
+      err.status = 404;
+      next(err);
+    }
+  });
+});
+
+function createStrategiesAndRedirect(strategyNames, titleId, res) {
+  const strategies = strategyNames.map((s) => {
+    return {
+      strategyName: s,
+      titleId: titleId
+    };
+  });
+  Strategy.bulkCreate(strategies).then(() => {
+    res.redirect('/titles/' + titleId);
+  });
+}
+
+function parseStrategyNames(req) {
+  return req.body.strategies.trim().split('\n').map((s) => s.trim()).filter((s) => s !== "");
+}
+
 
 
 module.exports = router;
