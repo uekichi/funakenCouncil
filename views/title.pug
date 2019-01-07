@@ -7,8 +7,8 @@ block content
   - var isMine = parseInt(user.id) === parseInt(title.user.userId)
   //なぜ表示されないか
   //なぜ保存したuserIdと閲覧しているUserIdが違うのか
-  p #{title.user.userId}
-  p #{parseInt(user.id)}
+  //p #{title.user.userId}
+  //p #{parseInt(user.id)}
   if isMine
     div
       a(href=`/titles/${title.titleId}/edit`) 編集する

@@ -163,6 +163,48 @@ describe('/titles/:titleId/users/:userId/comments', () => {
 });
 });
 
+describe('/titles/:titleId?edit=1', () => {
+  before(() => {
+    passportStub.install(app);
+    passportStub.login({ id: 711460729061126100, username: 'testuser' });
+  });
+
+  after(() => {
+    passportStub.logout();
+    passportStub.uninstall(app);
+  });
+
+  it('予定が更新でき、候補が追加できる', (done) => {
+    User.upsert({ userId: 711460729061126100, username: 'testuser'}).then(() => {
+      request(app)
+        .post('/titles')
+        .send({ titleName: 'テスト更新予定1', memo: 'テスト更新メモ1', strategies: 'テスト更新候補1' })
+        .end((err, res) => {
+          const createdTitlePath = res.headers.location;
+          const titleId = createdTitlePath.split('/titles/')[1];
+          //更新がされることをテストする
+          request(app)
+            .post(`/titles/${titleId}?edit=1`)
+            .send({titleName: 'テスト更新予定2', memo: 'テスト更新メモ2', strategies: 'テスト更新候補2'})
+            .end((err, res) => {
+              Title.findById(titleId).then((t) => {
+                assert.equal(t.titleName, 'テスト更新予定2');
+                aseert.equal(t.memo, 'テスト更新メモ2');
+              });
+              Strategy.findAll({
+                where: { titleId: titleId }
+              }).then((strategies) => {
+                assert.equal(strategies.length, 2);
+                assert.equal(strategies[0].strategyName, 'テスト更新候補1');
+                assert.equal(strategies[1].strategyName, 'テスト更新候補2');
+                deleteTitleAggregate(titleId, done, err);
+              });
+            });
+        });
+    });
+  });
+});
+
 function deleteTitleAggregate(titleId, done, err){
   const promiseCommentDestroy = Comment.findAll({
     where: {titleId: titleId}
