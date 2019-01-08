@@ -176,6 +176,10 @@ router.post('/:titleId', authenticationEnsurer, (req, res, next) => {
             }
           });
         });
+      } else　if (parseInt(req.query.delete) === 1) {
+        deleteTitleAggregate(req.params.titleId, () => {
+          res.redirect('/');
+        });
       } else {
         const err = new Error('不正なリクエストです');
         err.status = 400;
@@ -205,6 +209,33 @@ function parseStrategyNames(req) {
   return req.body.strategies.trim().split('\n').map((s) => s.trim()).filter((s) => s !== "");
 }
 
+function deleteTitleAggregate(titleId, done, err){
+  const promiseCommentDestroy = Comment.findAll({
+    where: {titleId: titleId}
+  }).then((comments) => {
+    return Promise.all(comments.map((c) => { return c.destroy(); }));
+  });
+  Aruaru.findAll({
+    where: { titleId: titleId }
+  }).then((aruarus) => {
+    const promises = aruarus.map((a) => { return a.destroy(); });
+    return Promise.all(promises);
+  }).then(() => {
+    return Strategy.findAll({
+        where: { titleId: titleId }
+    });
+  }).then((strategies) => {
+    const promises = strategies.map((c) => { return c.destroy(); });
+    promises.push(promiseCommentDestroy);
+    return Promise.all(promises);
+  }).then(() => {
+    return Title.findById(titleId).then((s) => { return s.destroy(); });
+  }).then(() => {
+    if (err) return done(err);
+    done();
+  });
+}
 
+router.deleteTitleAggregate = deleteTitleAggregate;
 
 module.exports = router;

@@ -18,3 +18,6 @@ block content
       textarea(name="strategies")
     div
       button(type="submit") 以上の内容で編集する
+  h3  危険な変更
+  form(method="post", action=`/titles/${title.titleId}?delete=1`)
+    button(type="submit") このレコードを削除する

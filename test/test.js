@@ -8,6 +8,7 @@ let Title = require('../models/title');
 let Strategy = require('../models/strategy');
 let Aruaru = require('../models/aruaru');
 let Comment = require('../models/comment');
+const deleteTitleAggregate = require('../routes/titles').deleteTitleAggregate;
 
 describe('/login', () => {
 
@@ -205,28 +206,93 @@ describe('/titles/:titleId?edit=1', () => {
   });
 });
 
-function deleteTitleAggregate(titleId, done, err){
-  const promiseCommentDestroy = Comment.findAll({
-    where: {titleId: titleId}
-  }).then((comments) => {
-    return Promise.all(comments.map((c) => { return c.destroy(); }));
+describe('/login', () => {
+
+  before(() => {
+    passportStub.install(app);
+    passportStub.login({ id: 711460729061126100, username: 'testuser' });
   });
-  Aruaru.findAll({
-    where: { titleId: titleId }
-  }).then((aruarus) => {
-    const promises = aruarus.map((a) => { return a.destroy(); });
-    return Promise.all(promises);
-  }).then(() => {
-    return Strategy.findAll({
-        where: { titleId: titleId }
+
+  after(() => {
+    passportStub.logout();
+    passportStub.uninstall(app);
+  });
+
+  it('レコードに関連する全ての情報が削除できる', (done) => {
+    User.upsert({ userId: 711460729061126100, username: 'testuser'}).then(() => {
+      request(app)
+        .post('/titles')
+        .send({ titleName: 'テスト更新予定1', memo: 'テスト更新メモ1', strategies: 'テスト更新候補1'})
+        .end((err, res) => {
+          const createdTitlePath = res.headers.location;
+          const titleId = createdTitlePath.split('/titles/')[1];
+
+          //あるある作成
+          const promiseAruaru = Strategy.findOne({
+            where: { titleId: titleId }
+          }).then((strategy) => {
+            return new Promise((resolve) => {
+              const userId = 711460729061126100;
+              request(app)
+                .post(`/titles/${titleId}/users/${userId}/strategies/${strategy.strategyId}`)
+                .send({ aruaru: 2 })
+                .end((err, res) => {
+                  if(err) done(err);
+                  resolve();
+                });
+            });
+          });
+
+          //コメント作成
+          const promiseComment = new Promise((resolve) => {
+            const userId = 711460729061126100;
+            request(app)
+              .post(`/titles/${titleId}/users/${userId}/comments`)
+              .send({ comment: 'testcomment' })
+              .expect('{"status":"OK","comment":"testcomment"}')
+              .end((err, res) => {
+                if(err) done(err);
+                resolve();
+              });
+          });
+
+          // 削除
+          const promiseDeleted = Promise.all([promiseAruaru, promiseComment]).then(() => {
+            return new Promise((resolve) => {
+              request(app)
+                .post(`/titles/${titleId}?delete=1`)
+                .end((err, res) => {
+                  if(err) done(err);
+                  resolve();
+                });
+            });
+          });
+          //テスト
+          promiseDeleted.then(() => {
+            const p1 = Comment.findAll({
+              where: { titleId: titleId }
+            }).then((comments) => {
+              assert.equal(comments.length, 0);
+            });
+            const p2 = Aruaru.findAll({
+              where: { titleId: titleId }
+            }).then((aruarus) => {
+              assert.equal(aruarus.length, 0);
+            });
+            const p3 = Strategy.findAll({
+              where: { titleId: titleId }
+            }).then((strategies) => {
+              assert.equal(strategies.length, 0);
+            });
+            const p4 = Title.findById(titleId).then((title) => {
+              assert.equal(!title, true);
+            });
+            Promise.all([p1, p2, p3, p4]).then(() => {
+              if(err) return done(err);
+              done();
+            });
+          });
+        });
     });
-  }).then((strategies) => {
-    const promises = strategies.map((c) => { return c.destroy(); });
-    promises.push(promiseCommentDestroy);
-    return Promise.all(promises);
-  }).then(() => {
-    Title.findById(titleId).then((s) => { s.destroy(); });
-    if (err) return done(err);
-    done();
   });
-}
+});
