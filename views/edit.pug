@@ -1,23 +1,26 @@
 extends layout
 
 block content
-  h3 編集
+  h3.my-3 レコード編集
   form(method="post" action=`/titles/${title.titleId}?edit=1`)
-    div
-      h5 タイトル
-      input(type="text" name="titleName" value=title.titleName)
-    div
-      h5 メモ
-      textarea(name="memo") #{title.memo}
-    div
+    input(type="hidden" name="_csrf" value!=csrfToken)
+    div.form-group
+      label(for="titleName") タイトル
+      input(type="text" name="titleName" value=title.titleName)#titleName.form-control
+    div.form-group
+      label(for="memo") メモ
+      textarea(name="memo" placeholder="ご自由に入力してください")#memo.form-control #{title.memo}
+    div.form-group
       label 既存の戦略・予想
-      ul
+      ul.list-group
         each strategy in strategies
-          li #{strategy.strategyName}
-      p 新規追加 (改行して複数入力してください)
-      textarea(name="strategies")
+          li.list-group-item #{strategy.strategyName}
+      label(for="strategies").my-2 新規追加
+      textarea(name="strategies" placeholder="追加分を入力してください")#strategies.form-control
     div
-      button(type="submit") 以上の内容で編集する
-  h3  危険な変更
+      button(type="submit").btn.btn-info 以上の内容で編集する
   form(method="post", action=`/titles/${title.titleId}?delete=1`)
-    button(type="submit") このレコードを削除する
+    div
+      p
+      input(type="hidden" name="_csrf" value!=csrfToken)
+      button(type="submit").btn.btn-danger このレコードを削除する

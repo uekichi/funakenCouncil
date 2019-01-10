@@ -66,11 +66,12 @@ app.use(passport.session());
 //ツイッター認証
 app.get('/auth/twitter',
     passport.authenticate('twitter'));
+
 //認証の成否分岐
 app.get('/auth/twitter/callback',
     passport.authenticate('twitter', { failureRedirect: '/login' }), //失敗したら
     function(req, res) {
-      res.redirect('/'); //成功したら
+        res.redirect('/');
 });
 
 // ルーター登録

@@ -4,7 +4,12 @@ const express = require('express');
 const router = express.Router();
 
 router.get('/', (req, res, next) => {
-  res.render('login', { title: '舟券評議会', user: req.user});
+  const from = req.query.from;
+  console.log(from);
+  if (from) {
+    res.cookie('loginFrom', from, { expires: new Date(Date.now() + 600000)});
+  }
+  res.render('login');
 });
 
 module.exports = router;

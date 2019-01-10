@@ -3,6 +3,7 @@
 var express = require('express');
 var router = express.Router();
 var Title = require('../models/title');
+const moment = require('moment-timezone');
 
 /* GET home page.  title はデータベースのテーブル名とpugで使う表示があるので混同しないように*/ 
 router.get('/', (req, res, next) => {
@@ -14,6 +15,10 @@ router.get('/', (req, res, next) => {
       },
       order: [['"createdAt"', 'DESC']]
     }).then((titles) => {
+      //東京時間に変更
+      titles.forEach((title) => {
+        title.formattedCreatedAt = moment(title.createdAt).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm');
+      });
       res.render('index', {
         title: title,
         user: req.user,
@@ -21,7 +26,7 @@ router.get('/', (req, res, next) => {
       });
     });
   } else {
-    res.render('index', {title: title});
+    res.render('index', {title: title, user: req.user});
   }
 });
 

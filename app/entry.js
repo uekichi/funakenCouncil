@@ -1,5 +1,8 @@
 'use strict';
 import $ from 'jquery';
+const global = Function('return this;')();
+global.jQuery = $;
+import bootstrap from 'bootstrap';
 
 $('.aruaru-toggle-button').each((i, e) => {
   const button = $(e);
@@ -15,6 +18,9 @@ $('.aruaru-toggle-button').each((i, e) => {
       button.data('aruaru', data.aruaru);
       const aruaruLabels = ['？？？？', 'あるある', 'ないない'];
       button.text(aruaruLabels[data.aruaru]);
+      const buttonStyles = ['btn-secondary', 'btn-success', 'btn-danger'];
+      button.removeClass('btn-danger btn-secondary btn-success');
+      button.addClass(buttonStyles[data.aruaru]);
     });
   });
 });

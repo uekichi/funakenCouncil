@@ -1,26 +1,22 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
-  div
-    if user
-      div
-        a(href="/logout") #{user.username} をログアウト
-      div
-        a(href="/titles/new") レース予想を作る
-      - var hasTitle = titles.length > 0
-      if hasTitle
-        h3 あなたのレース予想一覧
-        table.table
+  div.jumbotron.my-3
+    h1.display-4 舟券評議会
+    p.lead 舟券評議会はボートレース予想をワイワイ楽しむのが目的です
+    h6 Twitter認証を利用しています
+  if user
+    div
+      a(href="/titles/new").btn.btn-info 予想を作る
+    - var hasTitle = titles.length > 0
+    if hasTitle
+      h3.my-3 あなたの作った予想一覧
+      table.table
+        tr
+          th タイトル
+          th 作成日時
+        each title in titles
           tr
-            th タイトル名
-            th 作成日時
-          each title in titles
-            tr
-              td
-                a(href=`/titles/${title.titleId}`) #{title.titleName}
-              td #{title.createdAt}
-    else
-      div
-        a(href="/login") ログイン
+            td
+              a(href=`/titles/${title.titleId}`) #{title.titleName}
+            td #{title.formattedCreatedAt}

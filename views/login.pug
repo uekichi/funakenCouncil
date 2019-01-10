@@ -1,7 +1,4 @@
 extends layout
 
 block content
-  h3= title
-  a(href="/auth/twitter") Twitter でログイン
-  if user
-    p 現在 #{user.username} でログイン中
+  a(href="/auth/twitter").btn.btn-info.my-3 Twitterでログイン

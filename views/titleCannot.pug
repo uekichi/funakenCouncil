@@ -8,20 +8,14 @@ block content
       p(style="white-space:pre;") #{title.memo}
     div.card-footer
       p 作成者: #{title.user.username}
-  div.form-group
-    label(for="shareURL") 共有用 URL:
-    - var herokuURL = process.env.HEROKU_URL ? process.env.HEROKU_URL : 'http://localhost:8000/'
-    input(type="text" value=`${herokuURL}titles/${title.titleId}/`)#shareURL.form-control      
-  - var isMine = parseInt(user.id) === parseInt(title.user.userId)
-  //なぜ表示されないか
-  //なぜ保存したuserIdと閲覧しているUserIdが違うのか
-  //p #{title.user.userId}
-  //p #{parseInt(user.id)}
+  - var isMine = parseInt(user.id) === title.user.userId
   if isMine
-  h3.my-3 戦略・予想にボタンで答えてね
+    div
+      a(href=`/titles/${title.titleId}/edit`).btn.btn-info 編集する
+  h3.my-3 出欠表
   table.table.table-bordered
     tr
-      th 戦略・予想
+      th 予定
       each user in users
         th #{user.username}
     each strategy in strategies
@@ -37,24 +31,20 @@ block content
                 data-title-id=title.titleId
                 data-user-id=user.userId
                 data-strategy-id=strategy.strategyId
-                data-aruaru=aruaru).aruaru-toggle-button #{aruaruLabels[aruaru]}
+                data-aruaru="${aruaru}") #{availabilityLabels[availability]}
             else
-              p #{aruaruLabels[aruaru]}
+              h3 #{aruaruLabels[aruaru]}
     tr
       th コメント
       each user in users
         if user.isSelf
           td
-            p#self-comment #{commentMap.get(user.userId)}
+            p
+              small#self-comment #{commentMap.get(user.userId)}
             button(
               data-title-id=title.titleId
-              data-user-id=user.userId)#self-comment-button.btn-xs.btn-info コメントする
+              data-user-id=user.userId)#self-comment-button.btn-xs.btn-info 編集
         else
           td
-            p #{commentMap.get(user.userId)}
-  div
-    a(href=`/titles/${title.titleId}/edit`).btn.btn-info 編集する
-    p
-  div
-    a(href=`/`).btn.btn-outline-primary 一覧に戻る
-    p
+            p
+              small #{commentMap.get(user.userId)}

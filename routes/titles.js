@@ -9,9 +9,11 @@ const Strategy = require('../models/strategy');
 const User = require('../models/user');
 const Aruaru = require('../models/aruaru');
 const Comment = require('../models/comment');
+const csrf = require('csurf');
+const csrfProtection = csrf({ cookie: true });
 
-router.get('/new', authenticationEnsurer, (req, res, next) => {
-  res.render('new', { user: req.user });
+router.get('/new', authenticationEnsurer, csrfProtection, (req, res, next) => {
+  res.render('new', { user: req.user, csrfToken: req.csrfToken() });
 });
 
 router.get('/:titleId', authenticationEnsurer, (req, res, next) => {
@@ -105,7 +107,7 @@ router.get('/:titleId', authenticationEnsurer, (req, res, next) => {
 
 
 // '/'は URL  titles のこと
-router.post('/', authenticationEnsurer, (req, res, next) => {
+router.post('/', authenticationEnsurer, csrfProtection, (req, res, next) => {
   const titleId = uuid.v4();
   const createdAt = new Date();
   Title.create({
@@ -119,7 +121,7 @@ router.post('/', authenticationEnsurer, (req, res, next) => {
   });
 });
 
-router.get('/:titleId/edit', authenticationEnsurer, (req, res, next) => {
+router.get('/:titleId/edit', authenticationEnsurer, csrfProtection, (req, res, next) => {
   Title.findOne({
     where: {
       titleId: req.params.titleId
@@ -133,7 +135,8 @@ router.get('/:titleId/edit', authenticationEnsurer, (req, res, next) => {
         res.render('edit', {
           user: req.user,
           title: title,
-          strategies: strategies
+          strategies: strategies,
+          csrfToken: req.csrfToken()
         });
       });
     } else {
@@ -148,7 +151,7 @@ function isMine(req, title) {
   return title && parseInt(title.createdBy) === parseInt(req.user.id);
 }
 
-router.post('/:titleId', authenticationEnsurer, (req, res, next) => {
+router.post('/:titleId', authenticationEnsurer, csrfProtection, (req, res, next) => {
   Title.findOne({
     where: {
       titleId: req.params.titleId
@@ -159,7 +162,7 @@ router.post('/:titleId', authenticationEnsurer, (req, res, next) => {
         // 更新日なし
         title.update({
           titleId: title.titleId,
-          titleName: req.body.titleName.slice(0, 255),
+          titleName: req.body.titleName.slice(1, 255),
           memo: req.body.memo,
           createdBy: req.user.id,
         }).then((title) => {
