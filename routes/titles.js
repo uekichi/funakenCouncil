@@ -109,10 +109,12 @@ router.get('/:titleId', authenticationEnsurer, (req, res, next) => {
 // '/'は URL  titles のこと
 router.post('/', authenticationEnsurer, csrfProtection, (req, res, next) => {
   const titleId = uuid.v4();
+  let titleName = req.body.titleName.slice(0, 225);
+    titleName = titleName === "" ? "無題" : titleName;
   const createdAt = new Date();
   Title.create({
     titleId: titleId,
-    titleName: req.body.titleName.slice(0, 225),
+    titleName: titleName,
     memo: req.body.memo,
     createdBy: req.user.id,
     createdAt: createdAt
@@ -162,7 +164,7 @@ router.post('/:titleId', authenticationEnsurer, csrfProtection, (req, res, next)
         // 更新日なし
         title.update({
           titleId: title.titleId,
-          titleName: req.body.titleName.slice(1, 255),
+          titleName: req.body.titleName.slice(0, 255),
           memo: req.body.memo,
           createdBy: req.user.id,
         }).then((title) => {

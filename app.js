@@ -71,8 +71,8 @@ app.get('/auth/twitter',
 app.get('/auth/twitter/callback',
     passport.authenticate('twitter', { failureRedirect: '/login' }), //失敗したら
     function(req, res) {
-        res.redirect('/');
-});
+      res.redirect('/');
+    });
 
 // ルーター登録
 var indexRouter = require('./routes/index');

@@ -12,12 +12,18 @@ block content
     label(for="shareURL") 共有用 URL:
     - var herokuURL = process.env.HEROKU_URL ? process.env.HEROKU_URL : 'http://localhost:8000/'
     input(type="text" value=`${herokuURL}titles/${title.titleId}/`)#shareURL.form-control      
+  
   - var isMine = parseInt(user.id) === parseInt(title.user.userId)
   //なぜ表示されないか
-  //なぜ保存したuserIdと閲覧しているUserIdが違うのか
+  //なぜ保存したuserId(作成者)と閲覧しているUserIdが違うのか
   //p #{title.user.userId}
   //p #{parseInt(user.id)}
-  if isMine
+  div
+    h6 ツイートする:
+    a(href="https://twitter.com/intent/tweet?button_hashtag=舟券評議会&ref_src=twsrc%5Etfw" 
+    class="twitter-hashtag-button" 
+    data-text=`${herokuURL}titles/${title.titleId}/`)
+    script(src="https://platform.twitter.com/widgets.js" charset="utf-8")
   h3.my-3 戦略・予想にボタンで答えてね
   table.table.table-bordered
     tr
@@ -52,9 +58,11 @@ block content
         else
           td
             p #{commentMap.get(user.userId)}
+    // 作成者と閲覧者が同じ時だけ編集ボタンをつけたい
   div
-    a(href=`/titles/${title.titleId}/edit`).btn.btn-info 編集する
-    p
+    if isMine
+      a(href=`/titles/${title.titleId}/edit`).btn.btn-info 編集する
+      p
   div
     a(href=`/`).btn.btn-outline-primary 一覧に戻る
     p

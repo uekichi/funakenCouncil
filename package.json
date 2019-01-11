@@ -7,7 +7,7 @@
     "test": "node_modules/.bin/mocha --timeout 10000"
   },
   "dependencies": {
-    "bootstrap": "^4.0.0",
+    "bootstrap": "^4.2.1",
     "cookie-parser": "~1.4.3",
     "csurf": "^1.8.3",
     "debug": "~2.6.9",
@@ -23,7 +23,7 @@
     "passport-twitter": "^1.0.4",
     "pg": "^7.4.1",
     "pg-hstore": "^2.3.2",
-    "popper.js": "^1.14.0",
+    "popper.js": "^1.14.6",
     "pug": "2.0.0-beta11",
     "sequelize": "^4.33.4",
     "twitter": "^1.7.1",
