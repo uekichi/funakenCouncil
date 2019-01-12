@@ -1,0 +1,7 @@
+{
+  "name": "funaken-council",
+  "description": "舟券評議会",
+  "logo": "",
+  "keywords": ["node"],
+  "image": "heroku/nodejs"
+}
