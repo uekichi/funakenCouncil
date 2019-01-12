@@ -43,7 +43,7 @@ passport.deserializeUser(function (obj, done) {
 passport.use(new TwitterStrategy({
   consumerKey: process.env.TWITTER_CONSUMER_KEY,
   consumerSecret: process.env.TWITTER_CONSUMER_SECRET,
-  callbackURL: 'https://obscure-harbor-58861.herokuapp.com/auth/twitter/callback' || 'http://localhost:8000/auth/twitter/callback'
+  callbackURL: process.env.HEROKU_URL ? process.env.HEROKU_URL + 'auth/twitter/callback' : 'http://localhost:8000/auth/twitter/callback'
 },
 function (accessToken, refreshToken, profile, done) {
   process.nextTick(function () {
