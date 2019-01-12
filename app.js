@@ -71,7 +71,16 @@ app.get('/auth/twitter',
 app.get('/auth/twitter/callback',
     passport.authenticate('twitter', { failureRedirect: '/login' }), //失敗したら
     function(req, res) {
-      res.redirect('/');
+      var loginFrom = req.cookies.loginFrom;
+      // オープンリダイレクタ脆弱性対策
+      if (loginFrom &&
+        !loginFrom.includes('http://') &&
+        !loginFrom.includes('https://')) {
+        res.clearCookie('loginFrom');
+        res.redirect(loginFrom);
+      } else {
+        res.redirect('/');
+      }
     });
 
 // ルーター登録
