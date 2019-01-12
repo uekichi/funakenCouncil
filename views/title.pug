@@ -11,7 +11,7 @@ block content
   div.form-group
     label(for="shareURL") 共有用 URL:
     - var herokuURL = process.env.HEROKU_URL ? process.env.HEROKU_URL : 'http://localhost:8000/'
-    input(type="text" value=`${herokuURL}titles/${title.titleId}/`)#shareURL.form-control      
+    input(type="text" value=`${herokuURL}titles/${title.titleId}/`)#shareURL.form-control
   
   - var isMine = parseInt(user.id) === parseInt(title.user.userId)
   //なぜ表示されないか
