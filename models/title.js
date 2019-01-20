@@ -26,6 +26,7 @@ const Title = loader.database.define('titles', {
   },
   result: {
     type: Sequelize.TEXT,
+    defaultValue: '',
     allowNull: true
   },
 }, {
