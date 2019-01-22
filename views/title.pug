@@ -5,7 +5,11 @@ block content
     div.card-header
       h4 #{title.titleName}
     div.card-body
+<<<<<<< HEAD
       p.card-text #{title.memo}
+=======
+      p(style="white-space:pre-wrap;") #{title.memo}
+>>>>>>> local
     div.card-footer
       p 作成者: #{title.user.username}
   div.form-group
@@ -58,8 +62,11 @@ block content
               data-user-id=user.userId)#self-comment-button.btn-xs.btn-info コメントする
         else
           td
-            p #{commentMap.get(user.userId)}
-    // 作成者と閲覧者が同じ時だけ編集ボタンをつけたい
+            p #{commentMap.get(user.userId)}#result.form-control
+  div.form-group
+    h5 結果
+    label(for="result")#result.form-control #{title.result}
+  // 作成者と閲覧者が同じ時だけ編集ボタンをつけたい
   div
     if isMine
       a(href=`/titles/${title.titleId}/edit`).btn.btn-info 編集する

@@ -117,7 +117,8 @@ router.post('/', authenticationEnsurer, csrfProtection, (req, res, next) => {
     titleName: titleName,
     memo: req.body.memo,
     createdBy: req.user.id,
-    createdAt: createdAt
+    createdAt: createdAt,
+    //result: req.body.result //追加
   }).then((title) => {
     createStrategiesAndRedirect(parseStrategyNames(req), titleId, res);
   });
@@ -167,6 +168,7 @@ router.post('/:titleId', authenticationEnsurer, csrfProtection, (req, res, next)
           titleName: req.body.titleName.slice(0, 255),
           memo: req.body.memo,
           createdBy: req.user.id,
+          result: req.body.result
         }).then((title) => {
           Strategy.findAll({
             where: { titleId: title.titleId },
